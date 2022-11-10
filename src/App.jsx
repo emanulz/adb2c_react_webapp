@@ -7,6 +7,8 @@ import { DocumentsListPage } from './pages/Documents'
 import { CreateDocument } from './pages/CreateDocument'
 import './styles/App.css'
 
+import { msalInstance } from './services/authConfig'
+
 const Pages = () => {
   return (
     <Routes>
@@ -17,10 +19,10 @@ const Pages = () => {
   )
 }
 
-const App = ({ instance }) => {
+const App = () => {
   return (
     <Router>
-      <MsalProvider instance={instance}>
+      <MsalProvider instance={msalInstance}>
         <PageLayout>
           <Pages />
         </PageLayout>

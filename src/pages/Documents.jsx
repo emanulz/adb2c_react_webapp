@@ -3,26 +3,30 @@ import { useEffect, useState } from 'react'
 import { MsalAuthenticationTemplate, useMsal, useAccount } from '@azure/msal-react'
 import { InteractionRequiredAuthError, InteractionType } from '@azure/msal-browser'
 
-import { loginRequest, protectedResources } from '../services/authConfig'
+import { b2cPolicies, protectedResources } from '../services/authConfig'
 import { callApiWithToken } from '../services/fetch'
 import { DocumentsList } from '../components/DocumentsList'
 
 const DocumentsContent = () => {
-
   const { instance, accounts, inProgress } = useMsal()
   const account = useAccount(accounts[0] || {})
   const [documents, setDocuments] = useState()
 
+  const authority =
+    account?.idTokenClaims.idp === 'google.com'
+      ? b2cPolicies.authorities.googleSignIn
+      : b2cPolicies.authorities.emailSignIn
+
   useEffect(() => {
-    const authority = `https://emanueltesting.b2clogin.com/emanueltesting.onmicrosoft.com/${account.idTokenClaims.tfp}`
     if (account && inProgress === 'none' && !documents) {
       instance
         .acquireTokenSilent({
-          scopes: protectedResources.documentsAPI.scopes,
+          scopes: authority.scopes,
           account: account,
-          authority: authority,
+          authority: authority.authority,
         })
         .then((response) => {
+          console.log('RESPONSE ', response)
           callApiWithToken(response.accessToken, `${protectedResources.documentsAPI.endpoint}/DocumentItems`).then(
             (response) => {
               setDocuments(response)
@@ -35,11 +39,9 @@ const DocumentsContent = () => {
           if (error instanceof InteractionRequiredAuthError) {
             if (account && inProgress === 'none') {
               instance
-                .acquireTokenRedirect({
-                  scopes: protectedResources.documentsAPI.scopes,
-                  authority: authority,
-                })
+                .acquireTokenRedirect(authority)
                 .then((response) => {
+                  console.log('RESPONSE REDIRECT ', response)
                   callApiWithToken(
                     response.accessToken,
                     `${protectedResources.documentsAPI.endpoint}/DocumentItems`
@@ -53,18 +55,20 @@ const DocumentsContent = () => {
           }
         })
     }
-  }, [account, inProgress, instance, documents])
+  }, [account, inProgress, instance, documents, authority])
 
   return <>{documents ? <DocumentsList documents={documents} /> : null}</>
 }
 
 export const DocumentsListPage = () => {
-  const authRequest = {
-    ...loginRequest,
-  }
+  const { accounts } = useMsal()
+  const account = useAccount(accounts[0] || {})
+
+  const authority =
+    account.idTokenClaims.idp === 'google' ? b2cPolicies.authorities.googleSignIn : b2cPolicies.authorities.emailSignIn
 
   return (
-    <MsalAuthenticationTemplate interactionType={InteractionType.Redirect} authenticationRequest={authRequest}>
+    <MsalAuthenticationTemplate interactionType={InteractionType.Redirect} authenticationRequest={authority}>
       <DocumentsContent />
     </MsalAuthenticationTemplate>
   )

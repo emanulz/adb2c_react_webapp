@@ -13,6 +13,15 @@ export const NavigationBar = () => {
 
   const account = useAccount(accounts[0] || {})
 
+  const authority =
+    account?.idTokenClaims.idp === 'google.com'
+      ? b2cPolicies.authorities.googleSignIn
+      : b2cPolicies.authorities.emailSignIn
+
+  const editAuthority =
+    account?.idTokenClaims.idp === 'google.com'
+      ? b2cPolicies.authorities.googleEditProfile
+      : b2cPolicies.authorities.emailEditProfile
   return (
     <Row className="m-0" style={{ maxHeight: '100px' }}>
       <Navbar
@@ -35,14 +44,8 @@ export const NavigationBar = () => {
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu>
-                  <Dropdown.Item
-                    onClick={() => instance.logoutRedirect({ postLogoutRedirectUri: '/', mainWindowRedirectUri: '/' })}
-                  >
-                    Logout
-                  </Dropdown.Item>
-                  <Dropdown.Item onClick={() => instance.loginRedirect(b2cPolicies.authorities.editProfile)}>
-                    Edit Profile
-                  </Dropdown.Item>
+                  <Dropdown.Item onClick={() => instance.logoutRedirect(authority)}>Logout</Dropdown.Item>
+                  <Dropdown.Item onClick={() => instance.loginRedirect(editAuthority)}>Edit Profile</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </Row>
