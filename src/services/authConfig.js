@@ -1,29 +1,52 @@
 import { LogLevel } from '@azure/msal-browser'
 
+let AUTHORITY_BASE = ''
+let AUTHORITY_DOMAIN = ''
+
+if (process.env.ADB2C_CUSTOM_DOMAIN_NAME) {
+  AUTHORITY_BASE = `https://${process.env.ADB2C_CUSTOM_DOMAIN_NAME}/${process.env.ADB2C_TENANT_NAME}.onmicrosoft.com`
+  AUTHORITY_DOMAIN = process.env.ADB2C_CUSTOM_DOMAIN_NAME
+} else {
+  AUTHORITY_BASE = `https://${process.env.ADB2C_TENANT_NAME}/.b2clogin.com/${process.env.ADB2C_TENANT_NAME}.onmicrosoft.com`
+  AUTHORITY_DOMAIN = `${process.env.ADB2C_TENANT_NAME}/.b2clogin.com`
+}
+
+// TODO: SCOPES REQUESTED ARE HARDCODED
+export const protectedResources = {
+  documentsAPI: {
+    endpoint: process.env.DOCUMENTS_API_ENDPOINT,
+    scopes: [
+      `https://${process.env.ADB2C_TENANT_NAME}.onmicrosoft.com/documents-api/documents.read`,
+      `https://${process.env.ADB2C_TENANT_NAME}.onmicrosoft.com/documents-api/documents.write`,
+    ],
+  },
+}
+
 export const b2cPolicies = {
-  names: {
-    signUpSignIn: 'B2C_1_react_login',
-    forgotPassword: 'B2C_1_react_reset_password',
-    editProfile: 'B2C_1_react_edit_profile',
-  },
   authorities: {
-    signUpSignIn: {
-      authority: 'https://emanueltesting.b2clogin.com/emanueltesting.onmicrosoft.com/B2C_1_react_login_phone',
+    emailSignIn: {
+      authority: `${AUTHORITY_BASE}/${process.env.ADB2C_EMAIL_LOGIN_FLOW}`,
+      scopes: [...protectedResources.documentsAPI.scopes],
     },
-    forgotPassword: {
-      authority: 'https://emanueltesting.b2clogin.com/emanueltesting.onmicrosoft.com/B2C_1_react_reset_password',
+    phoneSignIn: {
+      authority: `${AUTHORITY_BASE}/${process.env.ADB2C_EMAIL_LOGIN_FLOW}`,
+      scopes: [...protectedResources.documentsAPI.scopes],
     },
-    editProfile: {
-      authority: 'https://emanueltesting.b2clogin.com/emanueltesting.onmicrosoft.com/B2C_1_react_edit_profile_email',
+    emailEditProfile: {
+      authority: `${AUTHORITY_BASE}/${process.env.ADB2C_EMAIL_EDIT_PROFILE_FLOW}`,
+      scopes: [...protectedResources.documentsAPI.scopes],
+    },
+    phoneEditProfile: {
+      authority: `${AUTHORITY_BASE}/${process.env.ADB2C_PHONE_EDIT_PROFILE_FLOW}`,
+      scopes: [...protectedResources.documentsAPI.scopes],
     },
   },
-  authorityDomain: 'emanueltesting.b2clogin.com',
+  authorityDomain: AUTHORITY_DOMAIN,
 }
 
 export const msalConfig = {
   auth: {
-    clientId: '80c57815-f27c-4952-8809-d1ec869d2e50',
-    authority: b2cPolicies.authorities.signUpSignIn.authority,
+    clientId: process.env.ADB2C_CLIENT_ID,
     knownAuthorities: [b2cPolicies.authorityDomain],
     redirectUri: '/',
     postLogoutRedirectUri: '/',
@@ -58,24 +81,4 @@ export const msalConfig = {
       },
     },
   },
-}
-
-export const protectedResources = {
-  documentsAPI: {
-    endpoint: 'https://localhost:7178/api',
-    scopes: [
-      'https://emanueltesting.onmicrosoft.com/documents-api/documents.read',
-      'https://emanueltesting.onmicrosoft.com/documents-api/documents.write',
-    ],
-  },
-}
-
-export const loginRequestEmail = {
-  scopes: [...protectedResources.documentsAPI.scopes],
-  authority: 'https://emanueltesting.b2clogin.com/emanueltesting.onmicrosoft.com/B2C_1_react_login_email',
-}
-
-export const loginRequest = {
-  scopes: [...protectedResources.documentsAPI.scopes],
-  authority: 'https://emanueltesting.b2clogin.com/emanueltesting.onmicrosoft.com/B2C_1_react_login_phone',
 }
