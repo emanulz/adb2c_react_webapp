@@ -1,0 +1,70 @@
+html, 
+body {
+    height: 100%;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+  max-width: 100%;
+}
+
+.App {
+  text-align: center;
+  height: 100%;
+
+}
+
+.navbar-brand {
+  margin-left: 10px;
+}
+
+
+.data-area-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
+}
+
+.login-button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 4px;
+  font-weight: 600;
+  margin: 0 10px;
+  width: 200px;
+  padding: 10px 0;
+  box-shadow: 0 0 20px rgba(104, 85, 224, 0.2);
+  transition: 0.4s;
+}
+
+.reg {
+  color: white;
+  background-color: #125DC0;
+}
+
+.log {
+  color: #125DC0;
+  background-color: rgba(255, 255, 255, 1);
+  border: 1px solid #125DC0;
+}
+
+.login-button:hover {
+  color: white;
+  box-shadow: 0 0 20px #125dc0b3;
+  background-color: #125DC0;
+}
+
+.app-navBar {
+  background-color: #125DC0 !important;
+}
+
+.editProfileBtn{
+  margin-right: 20px;
+}
+
+.signOutBtn{
+  margin-right: 20px;
+}
