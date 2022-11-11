@@ -27,7 +27,7 @@ if (CUSTOM_DOMAIN_NAME) {
 // TODO: SCOPES REQUESTED ARE HARDCODED
 export const protectedResources = {
   documentsAPI: {
-    endpoint: DOCUMENTS_API_ENDPOINT,
+    endpoint: DOCUMENTS_API_ENDPOINT.toString(),
     scopes: [
       `https://${TENANT_NAME}.onmicrosoft.com/documents/documents.read`,
       `https://${TENANT_NAME}.onmicrosoft.com/documents/documents.write`,

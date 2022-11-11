@@ -28,7 +28,7 @@ export const NavigationBar = () => {
         className="app-navBar w-100 d-flex flex-row align-items-center py-4 px-4 justify-content-between"
         variant="dark"
       >
-        <Link className="navbar-brand flex-row align-items-center" to="/">
+        <Link className="navbar-brand flex-row align-items-center m-0" to="/">
           <h4 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: '700', marginBottom: '0' }}>React Web APP</h4>
         </Link>
         <AuthenticatedTemplate>
@@ -39,6 +39,7 @@ export const NavigationBar = () => {
                   variant="transparent"
                   id="dropdown-basic"
                   style={{ fontFamily: 'Poppins, sans-serif', fontWeight: '700', color: 'white' }}
+                  className="p-0"
                 >
                   Welcome, {account?.idTokenClaims?.given_name || account?.name || ''}
                 </Dropdown.Toggle>

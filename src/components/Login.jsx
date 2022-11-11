@@ -7,8 +7,6 @@ export const Login = () => {
   const account = useAccount(accounts[0] || {})
 
   const handleEmailSignIn = async () => {
-    console.log('INPROGRESS ', inProgress)
-    console.log('ACCOUNT ', account)
     if (!account && inProgress === 'none') {
       await instance.loginRedirect(b2cPolicies.authorities.emailSignIn)
     }

@@ -26,11 +26,9 @@ const DocumentsContent = () => {
           authority: authority.authority,
         })
         .then((response) => {
-          console.log('RESPONSE ', response)
           callApiWithToken(response.accessToken, `${protectedResources.documentsAPI.endpoint}/DocumentItems`).then(
             (response) => {
               setDocuments(response)
-              console.log(response)
             }
           )
         })
@@ -41,12 +39,10 @@ const DocumentsContent = () => {
               instance
                 .acquireTokenRedirect(authority)
                 .then((response) => {
-                  console.log('RESPONSE REDIRECT ', response)
                   callApiWithToken(
                     response.accessToken,
                     `${protectedResources.documentsAPI.endpoint}/DocumentItems`
                   ).then((response) => {
-                    console.log(response)
                     setDocuments(response)
                   })
                 })

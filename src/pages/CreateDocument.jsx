@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { useMsal, useAccount, useIsAuthenticated } from '@azure/msal-react'
 import { InteractionRequiredAuthError } from '@azure/msal-browser'
-import { protectedResources } from '../services/authConfig'
+import { b2cPolicies, protectedResources } from '../services/authConfig'
 
 import { Col, Row, Form } from 'react-bootstrap'
 
@@ -28,8 +28,6 @@ export const CreateDocument = () => {
   }, [isAuthenticated, inProgress, instance, formData, navigate])
 
   const updateFormData = (ev, fieldName) => {
-    console.log(fieldName)
-    console.log(ev)
     const newFormData = { ...formData }
     switch (fieldName) {
       case 'DocumentDate': {
@@ -49,13 +47,16 @@ export const CreateDocument = () => {
     }
   }
 
-  const createNote = () => {
-    const authority = `https://emanueltesting.b2clogin.com/emanueltesting.onmicrosoft.com/${account.idTokenClaims.tfp}`
+  const createDocument = () => {
+    const authority =
+      account?.idTokenClaims.idp === 'google.com'
+        ? b2cPolicies.authorities.googleSignIn
+        : b2cPolicies.authorities.emailSignIn
     instance
       .acquireTokenSilent({
-        scopes: protectedResources.documentsAPI.scopes,
+        scopes: authority.scopes,
         account: account,
-        authority: authority,
+        authority: authority.authority,
       })
       .then((response) => {
         callApiPostWithToken(response.accessToken, `${protectedResources.documentsAPI.endpoint}/DocumentItems`, {
@@ -74,10 +75,7 @@ export const CreateDocument = () => {
         if (error instanceof InteractionRequiredAuthError) {
           if (account && inProgress === 'none') {
             instance
-              .acquireTokenRedirect({
-                scopes: protectedResources.documentsAPI.scopes,
-                authority: authority,
-              })
+              .acquireTokenRedirect(authority)
               .then((response) => {
                 callApiPostWithToken(
                   response.accessToken,
@@ -101,9 +99,9 @@ export const CreateDocument = () => {
 
   return (
     <Col style={{ fontFamily: 'Poppins, sans-serif', fontWeight: '500' }}>
-      <h2>Create New Document</h2>
+      <h2 className="mb-4">Create New Document</h2>
       <Form>
-        <Form.Group controlId="exampleForm.ControlInput1">
+        <Form.Group className="mb-4" controlId="exampleForm.ControlInput1">
           <Form.Label>Document Date</Form.Label>
           <Form.Control
             type="date"
@@ -111,7 +109,7 @@ export const CreateDocument = () => {
             onChange={(ev) => updateFormData(ev, 'DocumentDate')}
           />
         </Form.Group>
-        <Form.Group controlId="exampleForm.ControlSelect1">
+        <Form.Group className="mb-4" controlId="exampleForm.ControlSelect1">
           <Form.Label>Document Type</Form.Label>
           <Form.Control as="select" value={formData.documentType} onChange={(ev) => updateFormData(ev, 'DocumentType')}>
             <option value={'VACCINE_PROOF'}>VACCINE PROOF</option>
@@ -119,7 +117,7 @@ export const CreateDocument = () => {
             <option value={'OTHER_DOCUMENT'}>OTHER DOCUMENT</option>
           </Form.Control>
         </Form.Group>
-        <Form.Group controlId="exampleForm.ControlTextarea1">
+        <Form.Group className="mb-4" controlId="exampleForm.ControlTextarea1">
           <Form.Label>Document Notes</Form.Label>
           <Form.Control as="textarea" rows={3} value={formData.notes} onChange={(ev) => updateFormData(ev, 'Notes')} />
         </Form.Group>
@@ -128,7 +126,7 @@ export const CreateDocument = () => {
         <button className="login-button reg" onClick={() => navigate(-1)}>
           Back
         </button>
-        <button onClick={createNote} className="login-button log">
+        <button onClick={createDocument} className="login-button log">
           Create
         </button>
       </Row>

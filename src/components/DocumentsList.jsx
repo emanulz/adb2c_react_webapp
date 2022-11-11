@@ -16,7 +16,6 @@ export const DocumentsList = (props) => {
   }
 
   const tableRows = props.documents.map((document, index) => {
-    console.log(document)
     return (
       <tr key={index}>
         <td>{document.id}</td>
@@ -29,17 +28,15 @@ export const DocumentsList = (props) => {
 
   return (
     <>
-      <Row className="d-flex justify-content-between px-3">
+      <div className="d-flex justify-content-between f-flow-row">
         <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: '700' }}>Document List</h2>
-        <Link to="documents/create">
-          <button style={ButtonClass} className="login-button log">
+        <Link to="/documents/create">
+          <button style={ButtonClass} className="login-button log m-0">
             Add Document
           </button>
         </Link>
-      </Row>
-      <Row className="px-3">
-        <h5>User: {account.name}</h5>
-      </Row>
+      </div>
+      <h5>User: {account?.idTokenClaims?.given_name || account?.name || ''}</h5>
       <br />
       <div className="data-area-div">
         <Table style={{ fontFamily: 'Poppins, sans-serif', fontWeight: '500' }} striped bordered hover>
